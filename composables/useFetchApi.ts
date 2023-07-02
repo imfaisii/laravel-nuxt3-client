@@ -17,7 +17,7 @@ export default function useApiFetch<T>(path: string, options: UseFetchOptions<T>
     };
   }
 
-  return useFetch("http://localhost:8000" + path, {
+  return useFetch("http://127.0.0.1:8000" + path, {
     credentials: "include",
     watch: false,
     ...options,
