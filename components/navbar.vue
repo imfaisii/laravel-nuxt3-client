@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import {useAuthStore} from "@/stores/useAuthStore";
+
+const auth = useAuthStore();
+
 const routes = [
   {
     name: "Home",
@@ -38,6 +42,7 @@ const routes = [
             {{ route.name }}
           </v-btn>
         </div>
+        <pre>{{ auth.user }}</pre>
       </v-col>
     </v-row>
   </v-container>

@@ -15,7 +15,9 @@
     "nuxt": "^3.6.1"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.4.11",
     "@vee-validate/nuxt": "^4.10.3",
-    "@vee-validate/yup": "^4.10.3"
+    "@vee-validate/yup": "^4.10.3",
+    "pinia": "^2.1.4"
   }
 }

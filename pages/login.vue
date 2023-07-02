@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import * as yup from "yup";
-import useValidatedForm from "../composables/useValidationForm";
-import useApiFetch from "../composables/useFetchApi";
+import useValidatedForm from "@/composables/useValidationForm";
+import {useAuthStore} from "@/stores/useAuthStore";
 
 interface User {
   email: string;
@@ -19,16 +19,13 @@ const rules = yup.object({
 });
 
 const {form, errors, handleSubmit} = useValidatedForm(data, rules);
+const auth = useAuthStore();
 
 const onSubmit = handleSubmit(async (body) => {
-  await useApiFetch("/sanctum/csrf-cookie");
+  const {error} = await auth.login(body);
 
-  await useApiFetch("/login", {
-    body,
-    method: "POST",
-  });
-
-  const {data} = await useApiFetch("/api/user");
+  // to display errors from api call
+  console.log(error);
 });
 </script>
 
