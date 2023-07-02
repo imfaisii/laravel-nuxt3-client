@@ -1,37 +1,65 @@
-<script setup>
-import {useField, useForm} from "vee-validate";
+<script lang="ts" setup>
 import * as yup from "yup";
+import useValidatedForm from "../composables/useValidationForm";
+import useApiFetch from "../composables/useFetchApi";
 
-const validationSchema = yup.object().shape({
+interface User {
+  email: string;
+  password: string;
+}
+
+const data: User = {
+  email: "",
+  password: "",
+};
+
+const rules = yup.object({
   email: yup.string().email().required(),
   password: yup.string().min(8).required(),
 });
 
-const {handleSubmit, handleReset} = useForm({
-  validationSchema,
-});
+const {form, errors, handleSubmit} = useValidatedForm(data, rules);
 
-const email = useField("email", validationSchema);
-const password = useField("password", validationSchema);
+const onSubmit = handleSubmit(async (body) => {
+  await useApiFetch("/sanctum/csrf-cookie");
 
-const onSubmit = handleSubmit(async (values) => {
-  alert(JSON.stringify(values, null, 2));
+  await useApiFetch("/login", {
+    body,
+    method: "POST",
+  });
+
+  const {data} = await useApiFetch("/api/user");
 });
 </script>
-<template>
-  <form @submit.prevent="onSubmit">
-    <v-text-field
-      label="E-mail"
-      v-model="email.value.value"
-      :error-messages="email.errorMessage.value"
-    ></v-text-field>
 
-    <v-text-field
-      label="Password"
-      type="password"
-      v-model="password.value.value"
-      :error-messages="password.errorMessage.value"
-    ></v-text-field>
-    <v-btn color="primary" type="submit">Submit</v-btn>
-  </form>
+<template>
+  <v-container fluid fill-height>
+    <v-row vertical-align="center">
+      <v-col lg="6" sm="12" align-self="center" offset-lg="3">
+        <v-card class="elevation-12">
+          <v-toolbar dark color="success">
+            <v-toolbar-title>Login Form</v-toolbar-title>
+          </v-toolbar>
+          <v-card-text>
+            <form @submit.prevent="onSubmit">
+              <form-input
+                v-model="form.email"
+                name="email"
+                :errors="errors.email"
+              >
+              </form-input>
+              <form-input
+                v-model="form.password"
+                name="password"
+                type="password"
+                :errors="errors.password"
+              >
+              </form-input>
+              <v-btn class="mt-4" color="primary" type="submit">Submit</v-btn>
+            </form>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
